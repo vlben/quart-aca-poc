@@ -1,4 +1,4 @@
-name: ChatSearch
+name: quart-aca-poc
 
 infra:
     path: ./infra/bicep
