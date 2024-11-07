@@ -1,0 +1,4 @@
+name: ChatSearch
+
+infra:
+    path: ./infra/bicep
