@@ -1,11 +1,7 @@
-param projectName string
-param environmentInitial string
-param abbrs object
+param containerAppEnvName string
 param location string = resourceGroup().location
 
 param logAnalyticsName string
-
-var containerAppEnvName = string('${projectName}-${abbrs.appManagedEnvironments}${environmentInitial}')
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: logAnalyticsName

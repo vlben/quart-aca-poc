@@ -1,6 +1,6 @@
 import os
 
-from poc.api.setup_api import setup_app
+from api.setup_api import setup_app
 from quart import (Blueprint, Quart, jsonify, current_app)
 from dotenv import load_dotenv
 

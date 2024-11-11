@@ -4,5 +4,8 @@
     "minReplicas": "1",
     "maxReplicas": "2",
     "registryLoginServer":"",
-    "containerImage":"mcr.microsoft.com/dotnet/samples:aspnetapp-9.0"
+    "containerImageName":"quart-poc",
+    "targetPort":"8000",
+    "external":"true",
+    "containerName":"quart-aca-poc"
 }

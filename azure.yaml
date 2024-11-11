@@ -2,3 +2,11 @@ name: quart-aca-poc
 
 infra:
     path: ./infra/bicep
+
+services:
+  backend:
+    project: ./poc
+    language: py
+    host: containerapp
+    docker:
+      remoteBuild: true

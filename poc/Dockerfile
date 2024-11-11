@@ -1,10 +1,10 @@
-FROM python:3.12.7-slim-bullseye
+FROM python:3.12.7-alpine
 
-WORKDIR /poc
+WORKDIR /app
 
-COPY ./ /poc
+COPY ./ /app
 
-RUN python -m pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install -r requirements.txt
 
 RUN python -m pip install gunicorn
 

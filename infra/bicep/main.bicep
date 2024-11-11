@@ -1,12 +1,21 @@
 targetScope = 'subscription'
 
+// Imports from 'main.parameters.json'
 param environmentName string
 param location string
 param projectName string
 
-var environmentInitial = string(first(toLower(environmentName)))
-
 var abbrs = loadJsonContent('abbreviations.json')
+var environmentInitial = string(first(toLower(environmentName)))
+var tags = { 'azd-env-name': environmentName }
+
+// Resource names
+var logAnalyticsName = string('${projectName}-${abbrs.logAnalyticsWorkspace}${environmentInitial}')
+var appInsightsName = string('${projectName}-${abbrs.insightsComponents}${environmentInitial}')
+var containerAppEnvName = string('${projectName}-${abbrs.appManagedEnvironments}${environmentInitial}')
+var containerAppName = string('${projectName}-${abbrs.appContainerApps}${environmentInitial}')
+var containerRegistryName = string('${abbrs.containerRegistryRegistries}${projectName}${environmentInitial}')
+var managedUserIdentityName = string('${projectName}-${abbrs.managedIdentityUserAssignedIdentities}${environmentInitial}')
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-07-01' = {
   name: environmentName == 'test' 
@@ -21,9 +30,7 @@ module logAnalytics 'logs/loganalytics.bicep' = {
   name: 'logAnalyticsDeployment'
   scope: resourceGroup
   params: {
-    projectName: projectName
-    environmentInitial: environmentInitial
-    abbrs: abbrs
+    logAnalyticsName: logAnalyticsName
   }
 }
 
@@ -31,9 +38,7 @@ module appInsights 'logs/appinsights.bicep' = {
   name: 'appInsightsDeployment'
   scope: resourceGroup
   params: {
-    projectName: projectName
-    environmentInitial: environmentInitial
-    abbrs: abbrs
+    appInsightsName: appInsightsName
     logAnalyticsId: logAnalytics.outputs.logAnalyticsId
   }
 }
@@ -42,10 +47,8 @@ module containerAppEnv 'environment/containerapp-environment.bicep' = {
   name: 'containerEnvDeployment'
   scope: resourceGroup
   params: {
-    projectName: projectName
-    environmentInitial: environmentInitial
-    abbrs: abbrs
-    logAnalyticsName: logAnalytics.outputs.logAnalyticsName
+    containerAppEnvName: containerAppEnvName
+    logAnalyticsName: logAnalyticsName
   }
 }
 
@@ -53,9 +56,18 @@ module containerApp 'containerapp/containerapp.bicep' = {
   name: 'containerAppDeployment'
   scope: resourceGroup
   params: {
-    projectName: projectName
-    environmentInitial: environmentInitial
-    containerAppsEnvironmentName: containerAppEnv.outputs.containerAppEnvName
-    abbrs: abbrs
+    containerAppName: containerAppName
+    containerAppsEnvName: containerAppEnvName
+    containerRegistryName: containerRegistryName
+    managedUserIdentityName: managedUserIdentityName
+    tags: union(tags, { 'azd-service-name': 'backend' })
+  }
+}
+
+module containerRegistry './environment/containerregistry.bicep' = {
+  name: 'containerRegistryDeployment'
+  scope: resourceGroup
+  params: {
+    containerRegistryName: containerRegistryName
   }
 }
